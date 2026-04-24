@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Inventory = require('../models/Inventory');
 const { protect, authorize } = require('../middleware/auth');
+const { logActivity } = require('../middleware/audit');
+
 
 // GET all inventory
 router.get('/', protect, async (req, res) => {
@@ -17,7 +19,8 @@ router.get('/', protect, async (req, res) => {
 });
 
 // POST create inventory
-router.post('/', protect, authorize('admin'), async (req, res) => {
+router.post('/', protect, authorize('admin'), logActivity('CREATE', 'Inventory'), async (req, res) => {
+
   try {
     const inv = await Inventory.create(req.body);
     res.status(201).json({ success: true, data: inv });
@@ -25,7 +28,8 @@ router.post('/', protect, authorize('admin'), async (req, res) => {
 });
 
 // PUT update inventory / restock
-router.put('/:id', protect, authorize('admin'), async (req, res) => {
+router.put('/:id', protect, authorize('admin'), logActivity('UPDATE', 'Inventory'), async (req, res) => {
+
   try {
     const inv = await Inventory.findById(req.params.id);
     if (!inv) return res.status(404).json({ success: false, message: 'Not found' });
@@ -45,7 +49,8 @@ router.put('/:id', protect, authorize('admin'), async (req, res) => {
 });
 
 // POST update price
-router.patch('/:id/price', protect, authorize('admin'), async (req, res) => {
+router.patch('/:id/price', protect, authorize('admin'), logActivity('UPDATE_PRICE', 'Inventory'), async (req, res) => {
+
   try {
     const inv = await Inventory.findByIdAndUpdate(req.params.id, { pricePerLiter: req.body.pricePerLiter }, { new: true });
     res.json({ success: true, data: inv });

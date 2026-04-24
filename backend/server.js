@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
-require('dotenv').config();2
+require('dotenv').config();
 
 
 const app = express();
@@ -21,8 +21,9 @@ app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/wallet', require('./routes/wallet'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/dashboard', require('./routes/dashboard'));
-app.use('/api/dispenser', require('./routes/dispenser'));
+app.use('/api/dispensers', require('./routes/dispenser'));
 app.use('/api/feedback', require('./routes/feedback'));
+app.use('/api/audit-logs', require('./routes/auditLogs'));
 
 // Health check
 app.get('/api/health', (req, res) => {

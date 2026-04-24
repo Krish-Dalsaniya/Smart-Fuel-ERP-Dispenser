@@ -36,7 +36,7 @@ export default function FuelDispenser() {
       setStep(4);
       setTimeout(() => {
         setStep(1); setVehicle(null); setIdentifier(''); setFuelType(''); setQuantity('');
-      }, 8000);
+      }, 8000); 
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Transaction failed'),
   });

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const { protect, authorize } = require('../middleware/auth');
+const { logActivity } = require('../middleware/audit');
+
 
 router.get('/', protect, authorize('admin'), async (req, res) => {
   try {
@@ -23,7 +25,8 @@ router.get('/:id', protect, async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, logActivity('UPDATE', 'User'), async (req, res) => {
+
   try {
     const { password, ...updates } = req.body;
     if (req.user.role !== 'admin' && req.user._id.toString() !== req.params.id) {
@@ -34,7 +37,8 @@ router.put('/:id', protect, async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
-router.delete('/:id', protect, authorize('admin'), async (req, res) => {
+router.delete('/:id', protect, authorize('admin'), logActivity('DELETE', 'User'), async (req, res) => {
+
   try {
     await User.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'User deleted' });

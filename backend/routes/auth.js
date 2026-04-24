@@ -3,6 +3,8 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
+const { manualLog } = require('../middleware/audit');
+
 
 const generateToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET || 'secret', {
   expiresIn: process.env.JWT_EXPIRE || '7d'
@@ -16,6 +18,7 @@ router.post('/register', async (req, res) => {
     if (exists) return res.status(400).json({ success: false, message: 'Email already registered' });
 
     const user = await User.create({ name, email, password, role, phone });
+    await manualLog({ user, action: 'REGISTER', module: 'Auth', req });
     res.status(201).json({
       success: true,
       token: generateToken(user._id),
@@ -36,6 +39,7 @@ router.post('/login', async (req, res) => {
     }
     user.lastLogin = Date.now();
     await user.save({ validateBeforeSave: false });
+    await manualLog({ user, action: 'LOGIN', module: 'Auth', req });
     res.json({
       success: true,
       token: generateToken(user._id),

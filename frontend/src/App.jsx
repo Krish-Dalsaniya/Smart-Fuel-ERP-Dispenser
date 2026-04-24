@@ -13,6 +13,8 @@ import Users from './pages/Users';
 import Wallet from './pages/Wallet';
 import Feedback from './pages/Feedback';
 import FuelDispenser from './pages/FuelDispenser';
+import AuditLogs from './pages/AuditLogs';
+
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -49,6 +51,8 @@ export default function App() {
               <Route path="wallet" element={<Wallet />} />
               <Route path="fuel-dispenser" element={<ProtectedRoute roles={['admin', 'operator']}><FuelDispenser /></ProtectedRoute>} />
               <Route path="feedback" element={<Feedback />} />
+              <Route path="audit-logs" element={<ProtectedRoute roles={['admin']}><AuditLogs /></ProtectedRoute>} />
+
             </Route>
           </Routes>
         </BrowserRouter>

@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const Vehicle = require('../models/Vehicle');
 const { protect, authorize } = require('../middleware/auth');
+const { logActivity } = require('../middleware/audit');
+
 
 // GET all vehicles (admin/operator)
 router.get('/', protect, authorize('admin', 'operator'), async (req, res) => {
@@ -34,7 +36,8 @@ router.get('/:id', protect, async (req, res) => {
 });
 
 // POST create vehicle
-router.post('/', protect, async (req, res) => {
+router.post('/', protect, logActivity('CREATE', 'Vehicle'), async (req, res) => {
+
   try {
     const ownerId = req.user.role === 'admin' ? (req.body.owner || req.user._id) : req.user._id;
     const vehicle = await Vehicle.create({ ...req.body, owner: ownerId });
@@ -43,7 +46,8 @@ router.post('/', protect, async (req, res) => {
 });
 
 // PUT update vehicle
-router.put('/:id', protect, async (req, res) => {
+router.put('/:id', protect, logActivity('UPDATE', 'Vehicle'), async (req, res) => {
+
   try {
     const vehicle = await Vehicle.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!vehicle) return res.status(404).json({ success: false, message: 'Vehicle not found' });
@@ -52,7 +56,8 @@ router.put('/:id', protect, async (req, res) => {
 });
 
 // DELETE vehicle (admin only)
-router.delete('/:id', protect, authorize('admin'), async (req, res) => {
+router.delete('/:id', protect, authorize('admin'), logActivity('DELETE', 'Vehicle'), async (req, res) => {
+
   try {
     await Vehicle.findByIdAndDelete(req.params.id);
     res.json({ success: true, message: 'Vehicle deleted' });

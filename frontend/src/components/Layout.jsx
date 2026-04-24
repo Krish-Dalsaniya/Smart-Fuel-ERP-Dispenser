@@ -12,6 +12,8 @@ const icons = {
   fuelDispenser: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M4 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v7"/><path d="M16 11h2a2 2 0 0 1 2 2v7a1 1 0 0 1-1 1h-2"/><path d="M8 7h4"/><path d="M7 22h10"/></svg>,
   feedback: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>,
   logout: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>,
+  audit: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>,
+
 };
 
 const navItems = [
@@ -24,6 +26,8 @@ const navItems = [
   { to: '/wallet', label: 'Wallet', icon: icons.wallet, roles: ['admin', 'operator', 'vehicle_owner'] },
   { to: '/users', label: 'Users', icon: icons.users, roles: ['admin'] },
   { to: '/feedback', label: 'Feedback', icon: icons.feedback, roles: ['admin', 'operator', 'vehicle_owner'] },
+  { to: '/audit-logs', label: 'Audit Logs', icon: icons.audit, roles: ['admin'] },
+
 ];
 
 export default function Layout() {

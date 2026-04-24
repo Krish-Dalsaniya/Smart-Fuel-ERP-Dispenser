@@ -4,6 +4,8 @@ const Transaction = require('../models/Transaction');
 const Vehicle = require('../models/Vehicle');
 const Inventory = require('../models/Inventory');
 const { protect, authorize } = require('../middleware/auth');
+const { logActivity } = require('../middleware/audit');
+
 
 // GET all transactions
 router.get('/', protect, authorize('admin', 'operator'), async (req, res) => {
@@ -41,7 +43,8 @@ router.get('/my', protect, async (req, res) => {
 });
 
 // POST create transaction (fuel dispensing)
-router.post('/', protect, authorize('admin', 'operator'), async (req, res) => {
+router.post('/', protect, authorize('admin', 'operator'), logActivity('CREATE', 'Transaction'), async (req, res) => {
+
   try {
     const { vehicleId, fuelType, quantity, paymentMethod = 'wallet', notes } = req.body;
     const vehicle = await Vehicle.findById(vehicleId);
