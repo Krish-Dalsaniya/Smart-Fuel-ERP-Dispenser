@@ -41,6 +41,7 @@ export default function Dashboard() {
     queryFn: () => api.get('/dashboard/recent-transactions').then(r => r.data.data),
   });
 
+
   const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n || 0);
 
   if (isLoading) return (
@@ -58,6 +59,7 @@ export default function Dashboard() {
         </h1>
         <p className="text-slate-500 text-sm mt-1">{format(new Date(), 'EEEE, MMMM do yyyy')} — FuelFlow ERP Dashboard</p>
       </div>
+
 
       {/* Stats */}
       <div className="grid grid-cols-4 gap-4">

@@ -3,6 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { format } from 'date-fns';
+import toast from 'react-hot-toast';
+
 
 const FUEL_COLORS = { petrol: '#ff7d0a', diesel: '#3b82f6', premium: '#a855f7' };
 
@@ -10,6 +12,8 @@ export default function Transactions() {
   const { user } = useAuth();
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState({ fuelType: '', paymentStatus: '', startDate: '', endDate: '' });
+  const [generatingId, setGeneratingId] = useState(null);
+
 
   const endpoint = user?.role === 'vehicle_owner' ? '/transactions/my' : '/transactions';
   const params = new URLSearchParams({ page, limit: 20, ...Object.fromEntries(Object.entries(filters).filter(([, v]) => v)) });
@@ -18,6 +22,28 @@ export default function Transactions() {
     queryKey: ['transactions', page, filters],
     queryFn: () => api.get(`${endpoint}?${params}`).then(r => r.data),
   });
+
+  const handleInvoice = async (txnId) => {
+    try {
+      setGeneratingId(txnId);
+      const genRes = await api.post(`/invoices/generate/${txnId}`);
+      const invoice = genRes.data.data;
+      const response = await api.get(`/invoices/${invoice._id}/download`, { responseType: 'blob' });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `Invoice-${invoice.invoiceNumber}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      toast.success('Invoice downloaded');
+    } catch (err) {
+      toast.error('Failed to process invoice');
+    } finally {
+      setGeneratingId(null);
+    }
+  };
+
 
   const fmt = (n) => new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(n || 0);
 
@@ -65,7 +91,9 @@ export default function Transactions() {
                   <th className="text-left px-6 py-4">Payment</th>
                   <th className="text-left px-6 py-4">Status</th>
                   <th className="text-left px-6 py-4">Date</th>
+                  <th className="text-right px-6 py-4"></th>
                 </tr>
+
               </thead>
               <tbody>
                 {data?.data?.map(txn => (
@@ -95,7 +123,21 @@ export default function Transactions() {
                     <td className="px-6 py-4 text-xs text-slate-500">
                       {format(new Date(txn.createdAt), 'dd MMM yy HH:mm')}
                     </td>
+                    <td className="px-6 py-4 text-right">
+                      <button 
+                        onClick={() => handleInvoice(txn._id)}
+                        disabled={generatingId === txn._id}
+                        className="text-slate-500 hover:text-fuel-400 transition-colors disabled:opacity-50"
+                      >
+                        {generatingId === txn._id ? (
+                          <div className="w-4 h-4 border-2 border-fuel-500 border-t-transparent rounded-full animate-spin ml-auto"/>
+                        ) : (
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-4 h-4 ml-auto"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        )}
+                      </button>
+                    </td>
                   </tr>
+
                 ))}
               </tbody>
             </table>

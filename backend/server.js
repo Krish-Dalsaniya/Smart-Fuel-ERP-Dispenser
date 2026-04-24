@@ -3,15 +3,22 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const morgan = require('morgan');
+const path = require('path');
 require('dotenv').config();
 
 
 const app = express();
 
 // Middleware
-app.use(cors());
 app.use(express.json());
 app.use(morgan('dev'));
+
+// CORS Configuration
+const corsOptions = {
+  origin: process.env.FRONTEND_URL || '*',
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
@@ -24,6 +31,21 @@ app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/dispensers', require('./routes/dispenser'));
 app.use('/api/feedback', require('./routes/feedback'));
 app.use('/api/audit-logs', require('./routes/auditLogs'));
+app.use('/api/shifts', require('./routes/shifts'));
+app.use('/api/invoices', require('./routes/invoices'));
+app.use('/api/settings', require('./routes/settings'));
+
+// Static Serving (Frontend)
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  
+  // Catch-all to serve React's index.html
+  app.get('*', (req, res) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(path.resolve(__dirname, '../frontend', 'dist', 'index.html'));
+    }
+  });
+}
 
 // Health check
 app.get('/api/health', (req, res) => {

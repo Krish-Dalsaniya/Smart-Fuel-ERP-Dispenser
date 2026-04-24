@@ -14,6 +14,13 @@ import Wallet from './pages/Wallet';
 import Feedback from './pages/Feedback';
 import FuelDispenser from './pages/FuelDispenser';
 import AuditLogs from './pages/AuditLogs';
+import ShiftReports from './pages/ShiftReports';
+import ShiftDetail from './pages/ShiftDetail';
+import Invoices from './pages/Invoices';
+import Settings from './pages/Settings';
+
+
+
 
 import './index.css';
 
@@ -52,6 +59,13 @@ export default function App() {
               <Route path="fuel-dispenser" element={<ProtectedRoute roles={['admin', 'operator']}><FuelDispenser /></ProtectedRoute>} />
               <Route path="feedback" element={<Feedback />} />
               <Route path="audit-logs" element={<ProtectedRoute roles={['admin']}><AuditLogs /></ProtectedRoute>} />
+              <Route path="shift-reports" element={<ProtectedRoute roles={['admin', 'operator']}><ShiftReports /></ProtectedRoute>} />
+              <Route path="shift-report/:id" element={<ProtectedRoute roles={['admin', 'operator']}><ShiftDetail /></ProtectedRoute>} />
+              <Route path="invoices" element={<Invoices />} />
+              <Route path="settings" element={<ProtectedRoute roles={['admin']}><Settings /></ProtectedRoute>} />
+
+
+
 
             </Route>
           </Routes>

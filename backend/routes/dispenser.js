@@ -5,6 +5,7 @@ const { protect, authorize } = require('../middleware/auth');
 const { logActivity } = require('../middleware/audit');
 
 
+
 router.get('/', protect, async (req, res) => {
   try {
     const dispensers = await Dispenser.find().populate('operator', 'name');
@@ -33,6 +34,7 @@ router.patch('/:id/status', protect, authorize('admin', 'operator'), logActivity
   try {
     const dispenser = await Dispenser.findByIdAndUpdate(req.params.id, { status: req.body.status }, { new: true });
     res.json({ success: true, data: dispenser });
+
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 

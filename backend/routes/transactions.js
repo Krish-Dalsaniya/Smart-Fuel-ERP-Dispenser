@@ -7,6 +7,7 @@ const { protect, authorize } = require('../middleware/auth');
 const { logActivity } = require('../middleware/audit');
 
 
+
 // GET all transactions
 router.get('/', protect, authorize('admin', 'operator'), async (req, res) => {
   try {
@@ -86,7 +87,9 @@ router.post('/', protect, authorize('admin', 'operator'), logActivity('CREATE', 
     });
 
     await transaction.populate('vehicle', 'plateNumber make model');
+    
     res.status(201).json({ success: true, data: transaction });
+
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 

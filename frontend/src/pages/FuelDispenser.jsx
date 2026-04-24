@@ -11,11 +11,41 @@ export default function FuelDispenser() {
   const [fuelType, setFuelType] = useState('');
   const [quantity, setQuantity] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('wallet');
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [openingCash, setOpeningCash] = useState('');
+  const [closingCash, setClosingCash] = useState('');
+
 
   const { data: inventory } = useQuery({
     queryKey: ['inventory'],
     queryFn: () => api.get('/inventory').then(r => r.data.data),
   });
+
+  const { data: activeShift, refetch: refetchShift } = useQuery({
+    queryKey: ['active-shift'],
+    queryFn: () => api.get('/shifts/active').then(r => r.data.data),
+  });
+
+  const startShiftMutation = useMutation({
+    mutationFn: (data) => api.post('/shifts/start', data),
+    onSuccess: () => {
+      toast.success('Shift started successfully');
+      refetchShift();
+      setShowShiftModal(false);
+    },
+    onError: (err) => toast.error(err.response?.data?.message || 'Error starting shift'),
+  });
+
+  const endShiftMutation = useMutation({
+    mutationFn: (data) => api.post(`/shifts/end/${activeShift._id}`, data),
+    onSuccess: () => {
+      toast.success('Shift ended and report generated');
+      refetchShift();
+      setShowShiftModal(false);
+    },
+    onError: (err) => toast.error(err.response?.data?.message || 'Error ending shift'),
+  });
+
 
   const identifyMutation = useMutation({
     mutationFn: (plateNumber) => api.post('/vehicles/identify', { plateNumber }),
@@ -50,6 +80,26 @@ export default function FuelDispenser() {
         <h1 className="font-display font-bold text-2xl text-white">Fuel Dispenser</h1>
         <p className="text-slate-500 text-sm mt-1">Vehicle identification & fuel dispensing terminal</p>
       </div>
+
+      {/* Shift Control Panel */}
+      <div className="mb-8 flex items-center justify-between bg-slate-900/50 border border-slate-800 rounded-2xl p-4">
+        <div className="flex items-center gap-4">
+          <div className={`w-3 h-3 rounded-full animate-pulse ${activeShift ? 'bg-emerald-500' : 'bg-red-500'}`}/>
+          <div>
+            <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Active Shift</p>
+            <p className="text-sm font-semibold text-white">
+              {activeShift ? `Started at ${format(new Date(activeShift.startTime), 'HH:mm')}` : 'No active shift'}
+            </p>
+          </div>
+        </div>
+        <button 
+          onClick={() => setShowShiftModal(true)}
+          className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${activeShift ? 'bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white border border-red-500/20' : 'bg-fuel-500/10 text-fuel-400 hover:bg-fuel-500 hover:text-white border border-fuel-500/20'}`}
+        >
+          {activeShift ? 'End Shift' : 'Start Shift'}
+        </button>
+      </div>
+
 
       {/* Progress steps */}
       <div className="flex items-center gap-2 mb-8">
@@ -256,6 +306,59 @@ export default function FuelDispenser() {
           <p className="text-slate-500 text-sm mt-4">Resetting terminal in a few seconds...</p>
         </div>
       )}
+      {/* Shift Modal */}
+      {showShiftModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[100] p-4">
+          <div className="card w-full max-w-md p-8 animate-slideUp">
+            <h2 className="font-display font-bold text-xl text-white mb-2">
+              {activeShift ? 'End Current Shift' : 'Start New Shift'}
+            </h2>
+            <p className="text-sm text-slate-500 mb-6">
+              {activeShift ? 'Review your totals and enter final cash balance.' : 'Select a dispenser and enter opening cash to begin.'}
+            </p>
+            
+            <div className="space-y-4">
+              {!activeShift && (
+                <div>
+                  <label className="block text-xs text-slate-500 mb-1.5 uppercase font-mono tracking-widest">Dispenser ID</label>
+                  <input className="input" placeholder="Enter Dispenser ID" value={openingCash} onChange={e => setOpeningCash(e.target.value)} />
+                </div>
+              )}
+              <div>
+                <label className="block text-xs text-slate-500 mb-1.5 uppercase font-mono tracking-widest">
+                  {activeShift ? 'Closing Cash' : 'Opening Cash'}
+                </label>
+                <input 
+                  type="number" 
+                  className="input" 
+                  placeholder="₹ 0.00" 
+                  value={activeShift ? closingCash : openingCash} 
+                  onChange={e => activeShift ? setClosingCash(e.target.value) : setOpeningCash(e.target.value)} 
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-8">
+              <button onClick={() => setShowShiftModal(false)} className="btn-ghost flex-1 justify-center">Cancel</button>
+              <button 
+                onClick={() => {
+                  if (activeShift) {
+                    endShiftMutation.mutate({ closingCash: parseFloat(closingCash) });
+                  } else {
+                    // For demo, using a fixed dispenser ID if not provided
+                    startShiftMutation.mutate({ dispenserId: "65db8c9c9c9c9c9c9c9c9c9c", openingCash: parseFloat(openingCash) });
+                  }
+                }}
+                disabled={startShiftMutation.isPending || endShiftMutation.isPending}
+                className={`flex-1 justify-center py-3 rounded-xl font-bold uppercase tracking-widest transition-all ${activeShift ? 'bg-red-600 text-white' : 'bg-fuel-600 text-white'}`}
+              >
+                {activeShift ? 'End Shift' : 'Start Shift'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+
