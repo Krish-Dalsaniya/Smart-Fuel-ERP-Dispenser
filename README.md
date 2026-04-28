@@ -1,192 +1,127 @@
 # ⛽ FuelFlow ERP — Smart Fuel Dispenser System
 
-A full-stack ERP system for managing fuel dispensers with automated vehicle-based payment processing.
+![FuelFlow Banner](./assets/banner.png)
+
+**FuelFlow ERP** is a comprehensive, enterprise-grade solution designed to streamline fuel station operations. Built on the modern MERN stack, it integrates vehicle identification, automated wallet-based payments, real-time inventory tracking, and advanced analytics into a single, intuitive interface.
+
+---
+
+## ✨ Key Features
+
+### 🏢 Operations & Management
+*   **Smart Dispenser Terminal**: A streamlined 3-step process for fuel dispensing: Identification → Selection → Confirmation.
+*   **Inventory Control**: Real-time monitoring of fuel levels with automated alerts for low stock and easy restocking.
+*   **Vehicle Wallet System**: Digital wallet management for vehicles, enabling prepaid fueling and automated billing.
+*   **Dispenser Monitoring**: Track and manage multiple dispenser units across the station.
+
+### 🔐 Security & Access
+*   **Role-Based Access Control (RBAC)**: Distinct permissions for Admins, Operators, and Vehicle Owners.
+*   **Secure Authentication**: JWT-based authentication with case-insensitive login and secure password hashing.
+*   **Transaction Integrity**: Complete audit trails for every liter of fuel dispensed.
+
+### 📊 Analytics & Reporting
+*   **Executive Dashboard**: High-level overview of revenue, vehicle activity, and transaction trends.
+*   **Detailed History**: Searchable and filterable transaction logs with date range support.
+*   **Export Capabilities**: Generate PDF receipts and summaries for business operations.
+
+---
 
 ## 🏗️ System Architecture
 
+```mermaid
+graph TD
+    A[Frontend: React + Vite] <-->|REST API + JWT| B[Backend: Node.js + Express]
+    B <--> C[(MongoDB)]
+    
+    subgraph "Frontend Layer"
+        A1[React Query]
+        A2[TailwindCSS]
+        A3[Recharts]
+    end
+    
+    subgraph "Backend Layer"
+        B1[JWT Auth]
+        B2[Mongoose]
+        B3[PDFKit]
+    end
 ```
-Frontend (React + Vite)          Backend (Node.js + Express)
-  ┌─────────────────┐               ┌─────────────────────┐
-  │   React + Vite  │  REST API     │    Express Server    │
-  │   TailwindCSS   │◄────────────►│    JWT Auth (HTTP)   │
-  │   React Query   │  JWT Bearer   │    REST Endpoints    │
-  └─────────────────┘               └─────────┬───────────┘
-                                              │
-                                    ┌─────────▼───────────┐
-                                    │      MongoDB         │
-                                    │  - Vehicle Coll.    │
-                                    │  - Transaction Coll.│
-                                    │  - User Collection  │
-                                    │  - Inventory Coll.  │
-                                    └─────────────────────┘
-```
+
+---
 
 ## 📁 Project Structure
 
-```
+```text
 fuel-erp/
-├── backend/
-│   ├── models/
-│   │   ├── User.js          # User model (Admin/Operator/Vehicle Owner)
-│   │   ├── Vehicle.js       # Vehicle model with wallet
-│   │   ├── Transaction.js   # Fuel transaction records
-│   │   ├── Inventory.js     # Fuel stock management
-│   │   ├── Dispenser.js     # Fuel dispenser units
-│   │   └── Feedback.js      # Customer feedback
-│   ├── routes/
-│   │   ├── auth.js          # Register, Login, /me
-│   │   ├── vehicles.js      # CRUD + Vehicle identification
-│   │   ├── transactions.js  # Fuel dispensing + history
-│   │   ├── inventory.js     # Stock management + restocking
-│   │   ├── wallet.js        # Wallet top-up & balance
-│   │   ├── dispensers.js    # Dispenser management
-│   │   ├── users.js         # User management (Admin)
-│   │   ├── dashboard.js     # Stats & charts data
-│   │   └── feedback.js      # Submit & review feedback
-│   ├── middleware/
-│   │   └── auth.js          # JWT protect + role-based authorization
-│   ├── server.js            # Express app entry point
-│   ├── seed.js              # Database seed script
-│   ├── .env.example
-│   └── package.json
-└── frontend/
+├── backend/            # Express.js Server
+│   ├── models/         # MongoDB Schemas (User, Vehicle, Transaction, etc.)
+│   ├── routes/         # API Endpoints
+│   ├── middleware/     # Auth & Validation
+│   └── seed.js         # Database Initialization
+└── frontend/           # React Application
     ├── src/
-    │   ├── pages/
-    │   │   ├── Login.jsx         # Authentication page
-    │   │   ├── Dashboard.jsx     # Stats, charts, recent transactions
-    │   │   ├── FuelDispenser.jsx # 3-step fuel dispensing terminal
-    │   │   ├── Vehicles.jsx      # Vehicle registration & management
-    │   │   ├── Transactions.jsx  # Transaction history with filters
-    │   │   ├── Inventory.jsx     # Stock levels & restocking
-    │   │   ├── Wallet.jsx        # Wallet top-up interface
-    │   │   ├── Dispensers.jsx    # Dispenser management
-    │   │   ├── Users.jsx         # User management (Admin)
-    │   │   └── Feedback.jsx      # Feedback submission & review
-    │   ├── components/
-    │   │   └── Layout.jsx        # Sidebar navigation layout
-    │   ├── context/
-    │   │   └── AuthContext.jsx   # Auth state management
-    │   ├── utils/
-    │   │   └── api.js            # Axios instance with JWT
-    │   ├── App.jsx               # Router + Query client setup
-    │   ├── main.jsx
-    │   └── index.css             # Tailwind + custom styles
-    ├── index.html
-    ├── vite.config.js
-    └── package.json
+    │   ├── pages/      # View components (Dashboard, Wallet, Inventory, etc.)
+    │   ├── components/ # Reusable UI components
+    │   ├── context/    # Global State (Auth)
+    │   └── utils/      # API Config & Helpers
+    └── index.css       # Global Styles & Theme
 ```
 
-## 🚀 Setup & Installation
+---
+
+## 🚀 Getting Started
 
 ### Prerequisites
-- Node.js v18+
-- MongoDB (local or MongoDB Atlas)
+*   **Node.js**: v18 or higher
+*   **MongoDB**: Local instance or Atlas cluster
 
-### Backend Setup
+### Installation
 
-```bash
-cd backend
-npm install
+1.  **Clone the Repository**
+    ```bash
+    git clone https://github.com/yourusername/fuel-erp.git
+    cd fuel-erp
+    ```
 
-# Copy environment config
-cp .env.example .env
-# Edit .env and set your MONGODB_URI and JWT_SECRET
+2.  **Backend Setup**
+    ```bash
+    cd backend
+    npm install
+    cp .env.example .env # Configure MONGODB_URI and JWT_SECRET
+    node seed.js        # Optional: Seed demo data
+    npm run dev         # Start server on port 5000
+    ```
 
-# Seed the database with demo data
-node seed.js
+3.  **Frontend Setup**
+    ```bash
+    cd ../frontend
+    npm install
+    npm run dev         # Start dev server on port 3000
+    ```
 
-# Start the server
-npm run dev   # with nodemon (dev)
-npm start     # production
-```
+---
 
-### Frontend Setup
+## 🔑 Demo Access
 
-```bash
-cd frontend
-npm install
-npm run dev
-```
+| Role | Email | Password | Access Level |
+| :--- | :--- | :--- | :--- |
+| **Admin** | `admin@demo.com` | `admin123` | Full System Access |
+| **Operator** | `operator@demo.com` | `oper123` | Daily Operations |
+| **Vehicle Owner** | `owner@demo.com` | `owner123` | Wallet & Vehicle History |
 
-Visit http://localhost:3000
+---
 
-## 🔑 Demo Credentials
+## 🛠️ Technology Stack
 
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@demo.com | admin123 |
-| Operator | operator@demo.com | oper123 |
-| Vehicle Owner | owner@demo.com | owner123 |
+*   **Frontend**: React 18, Vite, TailwindCSS, React Query, Recharts, Axios
+*   **Backend**: Node.js, Express.js, MongoDB, Mongoose, JWT, bcryptjs
+*   **Tools**: PDFKit (Receipts), Morgan (Logging), Dotenv (Config)
 
-## 🌐 API Endpoints
+---
 
-### Authentication
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /api/auth/register | Register new user |
-| POST | /api/auth/login | Login & get JWT |
-| GET | /api/auth/me | Get current user |
+## 🤝 Contribution
 
-### Vehicles
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/vehicles | All vehicles (Admin/Operator) |
-| GET | /api/vehicles/my | Own vehicles (Owner) |
-| POST | /api/vehicles | Register vehicle |
-| POST | /api/vehicles/identify | Identify by plate/RFID |
-| PUT | /api/vehicles/:id | Update vehicle |
-| DELETE | /api/vehicles/:id | Delete vehicle |
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-### Transactions
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/transactions | All transactions |
-| GET | /api/transactions/my | Own vehicle transactions |
-| POST | /api/transactions | Create fuel transaction |
-| GET | /api/transactions/:id | Single transaction |
+---
 
-### Inventory
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/inventory | All fuel stock |
-| POST | /api/inventory | Create inventory item |
-| PUT | /api/inventory/:id | Update / restock |
-| PATCH | /api/inventory/:id/price | Update price |
-
-### Wallet
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/wallet/vehicle/:id | Get balance |
-| POST | /api/wallet/topup | Add funds |
-
-### Dashboard
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/dashboard/stats | Revenue, vehicles, charts |
-| GET | /api/dashboard/recent-transactions | Last 10 transactions |
-
-## 🔒 Role-Based Access Control
-
-| Feature | Admin | Operator | Vehicle Owner |
-|---------|-------|----------|---------------|
-| Dashboard (full stats) | ✅ | ✅ | ❌ |
-| Fuel Dispenser Terminal | ✅ | ✅ | ❌ |
-| All Vehicles | ✅ | ✅ | Own only |
-| All Transactions | ✅ | ✅ | Own only |
-| Inventory Management | ✅ | ✅ | ❌ |
-| Dispenser Management | ✅ | ✅ | ❌ |
-| User Management | ✅ | ❌ | ❌ |
-| Wallet (all vehicles) | ✅ | ✅ | Own only |
-| Feedback (review) | ✅ | ❌ | Submit only |
-
-## ⛽ Fuel Dispensing Flow
-
-1. **Vehicle Identification** — Enter plate number or RFID tag
-2. **Fuel Selection** — Choose fuel type, quantity, payment method
-3. **Confirmation** — Review transaction summary
-4. **Completion** — System deducts wallet, updates stock, records transaction
-
-## 🛠️ Tech Stack
-
-**Backend:** Node.js, Express.js, MongoDB, Mongoose, JWT, bcryptjs
-**Frontend:** React 18, Vite, TailwindCSS, React Query, Recharts, React Router v6, Axios
+*Built with ❤️ for modern fuel management.*
