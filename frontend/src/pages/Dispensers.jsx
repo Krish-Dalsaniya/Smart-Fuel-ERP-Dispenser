@@ -52,7 +52,7 @@ export default function Dispensers() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['dispensers'],
-    queryFn: () => api.get('/dispensers').then(r => r.data.data),
+    queryFn: () => api.get('/dispensers').then(r => r.data?.data || []),
   });
 
   const statusMutation = useMutation({

@@ -15,7 +15,7 @@ export default function Users() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['users', roleFilter, search],
-    queryFn: () => api.get(`/users?${new URLSearchParams({ role: roleFilter, search }).toString()}`).then(r => r.data.data),
+    queryFn: () => api.get(`/users?${new URLSearchParams({ role: roleFilter, search }).toString()}`).then(r => r.data?.data || []),
   });
 
   const createMutation = useMutation({

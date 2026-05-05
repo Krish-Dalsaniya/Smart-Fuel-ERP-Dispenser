@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 export default function Invoices() {
   const { data: invoices, isLoading } = useQuery({
     queryKey: ['invoices'],
-    queryFn: () => api.get('/invoices').then(r => r.data.data),
+    queryFn: () => api.get('/invoices').then(r => r.data?.data || []),
   });
 
   const handleDownload = async (invoice) => {

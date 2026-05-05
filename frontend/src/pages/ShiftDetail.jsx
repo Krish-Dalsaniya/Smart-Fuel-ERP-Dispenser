@@ -12,7 +12,7 @@ export default function ShiftDetail() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['shift-detail', id],
-    queryFn: () => api.get(`/shifts/${id}`).then(r => r.data.data),
+    queryFn: () => api.get(`/shifts/${id}`).then(r => r.data?.data || null),
   });
 
   if (isLoading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-fuel-500 border-t-transparent rounded-full animate-spin"/></div>;

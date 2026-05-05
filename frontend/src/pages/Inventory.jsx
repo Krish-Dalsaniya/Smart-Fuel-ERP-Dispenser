@@ -53,7 +53,7 @@ export default function Inventory() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['inventory'],
-    queryFn: () => api.get('/inventory').then(r => r.data.data),
+    queryFn: () => api.get('/inventory').then(r => r.data?.data || []),
   });
 
   const priceMutation = useMutation({

@@ -13,7 +13,7 @@ export default function Wallet() {
 
   const { data: vehicles } = useQuery({
     queryKey: ['vehicles', 'my'],
-    queryFn: () => api.get(user?.role === 'vehicle_owner' ? '/vehicles/my' : '/vehicles').then(r => r.data.data),
+    queryFn: () => api.get(user?.role === 'vehicle_owner' ? '/vehicles/my' : '/vehicles').then(r => r.data?.data || []),
   });
 
   const topupMutation = useMutation({

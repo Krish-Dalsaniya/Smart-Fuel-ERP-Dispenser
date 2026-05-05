@@ -72,7 +72,7 @@ export default function Vehicles() {
   const endpoint = user?.role === 'vehicle_owner' ? '/vehicles/my' : '/vehicles';
   const { data, isLoading } = useQuery({
     queryKey: ['vehicles', search],
-    queryFn: () => api.get(endpoint + (search ? `?search=${search}` : '')).then(r => r.data.data),
+    queryFn: () => api.get(endpoint + (search ? `?search=${search}` : '')).then(r => r.data?.data || []),
   });
 
   const deleteMutation = useMutation({

@@ -13,7 +13,7 @@ export default function ShiftReports() {
 
   const { data: shifts, isLoading } = useQuery({
     queryKey: ['shifts', filters],
-    queryFn: () => api.get('/shifts', { params: filters }).then(r => r.data.data),
+    queryFn: () => api.get('/shifts', { params: filters }).then(r => r.data?.data || []),
   });
 
   const stats = {

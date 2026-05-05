@@ -13,7 +13,7 @@ export default function Feedback() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['feedback'],
-    queryFn: () => api.get('/feedback').then(r => r.data.data),
+    queryFn: () => api.get('/feedback').then(r => r.data?.data || []),
     enabled: user?.role === 'admin',
   });
 

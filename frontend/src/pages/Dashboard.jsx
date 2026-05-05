@@ -33,12 +33,12 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { data, isLoading } = useQuery({
     queryKey: ['dashboard-stats'],
-    queryFn: () => api.get('/dashboard/stats').then(r => r.data.data),
+    queryFn: () => api.get('/dashboard/stats').then(r => r.data?.data || {}),
     refetchInterval: 30000,
   });
   const { data: recentTxns } = useQuery({
     queryKey: ['recent-transactions'],
-    queryFn: () => api.get('/dashboard/recent-transactions').then(r => r.data.data),
+    queryFn: () => api.get('/dashboard/recent-transactions').then(r => r.data?.data || []),
   });
 
 

@@ -19,12 +19,12 @@ export default function FuelDispenser() {
 
   const { data: inventory } = useQuery({
     queryKey: ['inventory'],
-    queryFn: () => api.get('/inventory').then(r => r.data.data),
+    queryFn: () => api.get('/inventory').then(r => r.data?.data || []),
   });
 
   const { data: activeShift, refetch: refetchShift } = useQuery({
     queryKey: ['active-shift'],
-    queryFn: () => api.get('/shifts/active').then(r => r.data.data),
+    queryFn: () => api.get('/shifts/active').then(r => r.data?.data || null),
   });
 
   const startShiftMutation = useMutation({
